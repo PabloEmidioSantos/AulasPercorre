@@ -1,19 +1,14 @@
-const btnProximo = document.getElementById('btnProximo');
-const btnAnterior = document.getElementById('btnAnterior');
+const paginas = ['index.html', 'pg10-20.html', 'pg20-30.html'];
+const paginaAtual = window.location.pathname.split('/').pop() || 'index.html';
+const indicePagina = paginas.indexOf(paginaAtual);
 
-if (btnProximo) {
-    btnProximo.addEventListener('click', function() {
-        if (window.location.pathname.includes('index.html') || window.location.pathname.endsWith('/')) {
-            window.location.href = 'pg10-20.html';
-        } 
-        else if (window.location.pathname.includes('pg10-20.html')) {
-            window.location.href = 'pg20-30.html';
+document.querySelectorAll('[data-nav]').forEach(function(botao) {
+    botao.addEventListener('click', function() {
+        const direcao = botao.dataset.nav === 'next' ? 1 : -1;
+        const destino = paginas[indicePagina + direcao];
+
+        if (destino) {
+            window.location.href = destino;
         }
     });
-}
-
-if (btnAnterior) {
-    btnAnterior.addEventListener('click', function() {
-        window.history.back();
-    });
-}
+});

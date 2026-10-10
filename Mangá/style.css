@@ -1,52 +1,116 @@
-*{
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    text-align: center;
-    align-items: center;
-    text-decoration: none;
 }
 
-body{
+body {
     background-image: linear-gradient(to bottom, #000000, #4f0000);
     color: #fff;
     font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-
+    min-height: 100vh;
+    text-align: center;
 }
 
-img.banner{
+header {
+    width: 100%;
+}
+
+img.banner {
     width: 100%;
     height: auto;
-
+    display: block;
 }
 
-h1.title{
-    font-size: 3rem;
+h1.title {
+    font-size: clamp(1.8rem, 6vw, 3rem);
     color: #fff;
     text-shadow: 2px 2px 4px #000;
-    margin-top: 20px;
+    margin: 20px 12px;
 }
 
-.btn{
+.btn,
+.btn2 {
     background-color: #000;
     color: #fff;
     border: none;
-    padding: 10px 20px;
-    margin: 30px;
+    padding: 12px 22px;
+    margin: 20px 8px;
     font-size: 1rem;
+    font-weight: 700;
     cursor: pointer;
     border-radius: 10px;
+    transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
 }
 
-.btn2{
+.btn2 {
     background-color: #4f0000;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    margin: 30px;
-    font-size: 1rem;
-    cursor: pointer;
-    border-radius: 10px;
+}
+
+.btn:hover,
+.btn2:hover {
+    background-color: #4f0000;
+    box-shadow: 0 6px 16px #0008;
+    transform: translateY(-3px) scale(1.04);
+}
+
+.btn2:hover {
+    background-color: #700000;
+}
+
+.btn:active,
+.btn2:active {
+    transform: translateY(1px) scale(.97);
+}
+
+.btn:focus-visible,
+.btn2:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+}
+
+.btn:disabled,
+.btn2:disabled {
+    cursor: not-allowed;
+    opacity: .45;
+    transform: none;
+    box-shadow: none;
+}
+
+.progress {
+    display: inline-block;
+    min-width: 90px;
+    font-weight: 700;
+}
+
+main {
+    width: 100%;
+    padding: 8px 12px 24px;
+}
+
+main img {
+    display: block;
+    width: 100%;
+    max-width: 910px;
+    height: auto;
+    margin: 0 auto 12px;
+}
+
+main img.cover {
+    max-width: 520px;
+    margin-bottom: 24px;
+}
+
+@media (max-width: 480px) {
+    .btn,
+    .btn2 {
+        padding: 10px 14px;
+        margin: 16px 4px;
+        font-size: .9rem;
+    }
+
+    .progress {
+        min-width: 76px;
+        font-size: .9rem;
+    }
 }

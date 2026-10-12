@@ -101,6 +101,21 @@ main img.cover {
     margin-bottom: 24px;
 }
 
+.site-footer {
+    padding: 24px 12px;
+    background-color: #000;
+}
+
+.site-footer a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.site-footer a:hover,
+.site-footer a:focus-visible {
+    text-decoration: underline;
+}
+
 @media (max-width: 480px) {
     .btn,
     .btn2 {

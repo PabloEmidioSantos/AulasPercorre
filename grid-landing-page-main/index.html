@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon-32x32.png">
+  <title>Coletivo Ponte</title>
+  <style>
+    @font-face {
+      font-family: "Inter";
+      src: url("./assets/fonts/inter/inter-variable.ttf") format("truetype");
+      font-weight: 100 900;
+      font-display: swap;
+    }
+
+    :root {
+      --cor-fundo: hsl(220, 100%, 56%);
+      --cor-fundo-menu: rgba(8, 35, 120, 0.96);
+      --cor-linha: rgba(255, 255, 255, 0.24);
+      --cor-texto: hsl(0, 0%, 100%);
+      --cor-texto-suave: rgba(255, 255, 255, 0.84);
+      --cor-foco: rgba(255, 255, 255, 0.8);
+      --cor-sombra: rgba(0, 0, 0, 0.18);
+      --tamanho-titulo: clamp(3.5rem, 5.6vw, 7.2rem);
+      --tamanho-titulo-mobile: clamp(3.2rem, 13vw, 5.5rem);
+      --tamanho-valor: clamp(2.3rem, 2.5vw, 4.1rem);
+      --tamanho-valor-mobile: clamp(2.3rem, 11vw, 3.6rem);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 16px;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--cor-texto);
+      background: var(--cor-fundo);
+      font-family: "Inter", "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body.menu-aberto {
+      overflow: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    .pagina {
+      min-height: 100vh;
+      background: var(--cor-fundo);
+    }
+
+    .cabecalho {
+      position: relative;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1440px;
+      min-height: 72px;
+      margin: 0 auto;
+      padding: 0 1.75rem 0 1.8rem;
+      border-bottom: 1px solid var(--cor-linha);
+    }
+
+    .marca {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.7rem;
+      font-size: 1.1rem;
+      font-weight: 500;
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+
+    .marca-ponto {
+      width: 0.7rem;
+      height: 0.7rem;
+      background: var(--cor-texto);
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15);
+    }
+
+    .botao-menu {
+      position: relative;
+      width: 2.9rem;
+      height: 2.9rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: 0;
+      border-radius: 0.4rem;
+      cursor: pointer;
+      color: var(--cor-texto);
+      transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .botao-menu:hover,
+    .botao-menu:focus-visible {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .botao-menu:focus-visible,
+    .menu-link:focus-visible,
+    .link-rodape:focus-visible {
+      outline: 2px solid var(--cor-foco);
+      outline-offset: 3px;
+    }
+
+    .barras-menu {
+      position: relative;
+      width: 1.7rem;
+      height: 1.1rem;
+      display: inline-block;
+    }
+
+    .barras-menu span {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--cor-texto);
+      border-radius: 999px;
+      transition: transform 0.25s ease, opacity 0.25s ease, top 0.25s ease;
+    }
+
+    .barras-menu span:nth-child(1) {
+      top: 0;
+    }
+
+    .barras-menu span:nth-child(2) {
+      top: 0.46rem;
+    }
+
+    .barras-menu span:nth-child(3) {
+      top: 0.92rem;
+    }
+
+    .botao-menu[aria-expanded="true"] .barras-menu span:nth-child(1) {
+      top: 0.46rem;
+      transform: rotate(45deg);
+    }
+
+    .botao-menu[aria-expanded="true"] .barras-menu span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .botao-menu[aria-expanded="true"] .barras-menu span:nth-child(3) {
+      top: 0.46rem;
+      transform: rotate(-45deg);
+    }
+
+    .painel-menu {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(27rem, 100vw);
+      height: 100vh;
+      background: var(--cor-fundo-menu);
+      box-shadow: -0.5rem 0 2.5rem var(--cor-sombra);
+      transform: translateX(105%);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.28s ease, opacity 0.28s ease;
+      z-index: 15;
+    }
+
+    .painel-menu.aberto {
+      transform: translateX(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .menu-navegacao {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      padding: 5.5rem 2rem 2rem;
+    }
+
+    .menu-link {
+      display: flex;
+      align-items: center;
+      min-height: 3.5rem;
+      font-size: 1.35rem;
+      font-weight: 500;
+      letter-spacing: -0.04em;
+      color: var(--cor-texto);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+      transition: color 0.2s ease, transform 0.2s ease;
+    }
+
+    .menu-link:hover,
+    .menu-link:focus-visible {
+      color: rgba(255, 255, 255, 0.9);
+      transform: translateX(0.2rem);
+    }
+
+    .conteudo-principal {
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    .secao-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.06fr) minmax(0, 1.45fr);
+      min-height: calc(100vh - 72px - 72px);
+      border-bottom: 1px solid var(--cor-linha);
+    }
+
+    .coluna-texto {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: clamp(2.4rem, 3vw, 4rem) 2.25rem 2.25rem 2.7rem;
+    }
+
+    .titulo-principal {
+      margin: 0;
+      max-width: 620px;
+      font-size: var(--tamanho-titulo);
+      line-height: 0.86;
+      letter-spacing: -0.085em;
+      font-weight: 500;
+    }
+
+    .descricao-principal {
+      max-width: 500px;
+      margin: 1.7rem 0 0;
+      font-size: 1.065rem;
+      line-height: 1.3;
+      letter-spacing: -0.02em;
+      color: var(--cor-texto-suave);
+    }
+
+    .grid-estatisticas {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      width: 100%;
+      min-height: 100%;
+      border-left: 1px solid var(--cor-linha);
+    }
+
+    .cartao-estatistica {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 14.8rem;
+      padding: 1.2rem 1.7rem 1.1rem 1.75rem;
+      border-right: 1px solid var(--cor-linha);
+      border-bottom: 1px solid var(--cor-linha);
+      transition: background-color 0.2s ease;
+    }
+
+    .cartao-estatistica:hover,
+    .cartao-estatistica:focus-within {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .cabecalho-cartao {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      min-height: 4.4rem;
+    }
+
+    .icone-estatistica {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.2rem;
+      height: 2.2rem;
+      color: var(--cor-texto);
+      flex-shrink: 0;
+    }
+
+    .icone-estatistica svg {
+      width: 2.2rem;
+      height: 2.2rem;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2.3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .simbolo-estatistica {
+      display: inline-block;
+      font-size: 2.3rem;
+      line-height: 1;
+      font-weight: 400;
+      letter-spacing: -0.08em;
+      transform: translateY(-0.04em);
+    }
+
+    .valor-estatistica {
+      margin: 0;
+      font-size: var(--tamanho-valor);
+      line-height: 1;
+      letter-spacing: -0.08em;
+      font-weight: 500;
+      text-align: right;
+    }
+
+    .rotulo-estatistica {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 500;
+      letter-spacing: -0.04em;
+      line-height: 1.2;
+    }
+
+    .texto-estatistica {
+      margin: 0.35rem 0 0;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 0.875rem;
+      line-height: 1.55;
+      letter-spacing: -0.015em;
+      max-width: 18rem;
+    }
+
+    .rodape {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 1.15rem 1.8rem 1.8rem;
+      font-size: 0.875rem;
+      letter-spacing: -0.02em;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .link-rodape {
+      color: inherit;
+      text-decoration: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .link-rodape:hover,
+    .link-rodape:focus-visible {
+      opacity: 1;
+    }
+
+    @media (max-width: 760px) {
+      .cabecalho {
+        min-height: 68px;
+        padding: 0 1.2rem;
+      }
+
+      .marca {
+        font-size: 1rem;
+      }
+
+      .secao-hero {
+        grid-template-columns: 1fr;
+      }
+
+      .coluna-texto {
+        padding: 2.5rem 1.2rem 1.2rem;
+      }
+
+      .titulo-principal {
+        max-width: 100%;
+        font-size: var(--tamanho-titulo-mobile);
+        line-height: 0.9;
+        letter-spacing: -0.08em;
+      }
+
+      .descricao-principal {
+        max-width: 100%;
+        margin-top: 1.3rem;
+        font-size: 1.08rem;
+      }
+
+      .grid-estatisticas {
+        grid-template-columns: 1fr;
+        border-left: 0;
+      }
+
+      .cartao-estatistica {
+        min-height: auto;
+        padding: 1.1rem 1.2rem 1.3rem;
+      }
+
+      .valor-estatistica {
+        font-size: var(--tamanho-valor-mobile);
+      }
+
+      .rodape {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.4rem;
+        padding: 1.15rem 1.2rem 2rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="pagina">
+    <header class="cabecalho">
+      <a class="marca" href="#" aria-label="Página inicial do Coletivo Ponte">
+        <span class="marca-ponto" aria-hidden="true"></span>
+        <span>Coletivo Ponte</span>
+      </a>
+
+      <button class="botao-menu" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="painel-menu">
+        <span class="barras-menu" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+      </button>
+    </header>
+
+    <aside class="painel-menu" id="painel-menu" aria-label="Menu de navegação">
+      <nav class="menu-navegacao" aria-label="Navegação principal">
+        <a class="menu-link" href="#">Sobre</a>
+        <a class="menu-link" href="#">Nosso trabalho</a>
+        <a class="menu-link" href="#">Parceiros</a>
+        <a class="menu-link" href="#">Relatório anual</a>
+        <a class="menu-link" href="#">Doar</a>
+      </nav>
+    </aside>
+
+    <main class="conteudo-principal">
+      <section class="secao-hero" aria-label="Seção principal com impacto educacional">
+        <div class="coluna-texto">
+          <h1 class="titulo-principal">Uma sala de aula<br>para cada criança.</h1>
+          <p class="descricao-principal">Financiamos as escolas, treinamos os professores e medimos o que funciona — para que cada criança que alcançamos hoje se torne uma graduada amanhã.</p>
+        </div>
+
+        <div class="grid-estatisticas" aria-label="Estatísticas do impacto da organização">
+          <article class="cartao-estatistica">
+            <div class="cabecalho-cartao">
+              <span class="icone-estatistica" aria-hidden="true">
+                <svg viewBox="0 0 32 32" role="img" aria-hidden="true">
+                  <path d="M3 18h6l4-10 5 16 4-9h7"></path>
+                </svg>
+              </span>
+              <p class="valor-estatistica">2,4M</p>
+            </div>
+            <div>
+              <h2 class="rotulo-estatistica">Alunos atendidos</h2>
+              <p class="texto-estatistica">Em 31 países desde 2011.</p>
+            </div>
+          </article>
+
+          <article class="cartao-estatistica">
+            <div class="cabecalho-cartao">
+              <span class="icone-estatistica" aria-hidden="true">
+                <span class="simbolo-estatistica">+</span>
+              </span>
+              <p class="valor-estatistica">1,284</p>
+            </div>
+            <div>
+              <h2 class="rotulo-estatistica">Escolas parceiras</h2>
+              <p class="texto-estatistica">Em 14 países, do Quênia à Guatemala.</p>
+            </div>
+          </article>
+
+          <article class="cartao-estatistica">
+            <div class="cabecalho-cartao">
+              <span class="icone-estatistica" aria-hidden="true">
+                <svg viewBox="0 0 32 32" role="img" aria-hidden="true">
+                  <path d="M4 22l8-8 6 6 10-10"></path>
+                </svg>
+              </span>
+              <p class="valor-estatistica">38K</p>
+            </div>
+            <div>
+              <h2 class="rotulo-estatistica">Professores treinados</h2>
+              <p class="texto-estatistica">Equipados com ferramentas e metodologia modernas.</p>
+            </div>
+          </article>
+
+          <article class="cartao-estatistica">
+            <div class="cabecalho-cartao">
+              <span class="icone-estatistica" aria-hidden="true">
+                <svg viewBox="0 0 32 32" role="img" aria-hidden="true">
+                  <path d="M5 23l8-8 5 5 9-9"></path>
+                  <path d="M20 11h7v7"></path>
+                </svg>
+              </span>
+              <p class="valor-estatistica">3,1×</p>
+            </div>
+            <div>
+              <h2 class="rotulo-estatistica">Aumento de graduação</h2>
+              <p class="texto-estatistica">Escolas parceiras superam as médias nacionais em 3x.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="rodape" aria-label="Rodapé da página">
+      <div>© 2026 Coletivo Ponte</div>
+      <div>Organização registrada 12345678</div>
+    </footer>
+  </div>
+
+  <script>
+    const botaoMenu = document.querySelector('.botao-menu');
+    const painelMenu = document.querySelector('.painel-menu');
+
+    const alternarMenu = () => {
+      const menuAberto = painelMenu.classList.toggle('aberto');
+      botaoMenu.setAttribute('aria-expanded', String(menuAberto));
+      botaoMenu.setAttribute('aria-label', menuAberto ? 'Fechar menu' : 'Abrir menu');
+      document.body.classList.toggle('menu-aberto', menuAberto);
+    };
+
+    botaoMenu.addEventListener('click', alternarMenu);
+
+    document.addEventListener('keydown', (evento) => {
+      if (evento.key === 'Escape' && painelMenu.classList.contains('aberto')) {
+        alternarMenu();
+        botaoMenu.focus();
+      }
+    });
+
+    document.addEventListener('click', (evento) => {
+      const clicouNoMenu = painelMenu.contains(evento.target);
+      const clicouNoBotao = botaoMenu.contains(evento.target);
+
+      if (!clicouNoMenu && !clicouNoBotao && painelMenu.classList.contains('aberto')) {
+        alternarMenu();
+      }
+    });
+  </script>
+</body>
+</html>
